@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roll Roll Roll Your Dice</title>
     <script>
-        rollList = [];
+        results = [];
         var mean;
         var median;
         var mode;
-        var doubles = 0;
-        var triples = 0;
+        var numDoubles = 0;
+        var numTriples = 0;
 
         function initialize() {
             row1 = document.getElementById("rollSum");
@@ -21,100 +21,8 @@
             medianOutput = document.getElementById("median");
             modeOutput = document.getElementById("mode");
 
-            doublesOutput = document.getElementById("doubles");
-            triplesOutput = document.getElementById("triples");
-        }
-
-        function rollDice() {
-            var numRolls = (document.getElementById("eachRoll")).value;
-            for (let i = 0; i < numRolls; i++) {
-                if (numDice == 1) {
-                    rollList.push(getRandomInteger(1, 6));
-                }
-                else if (numDice == 2) {
-                    var num1 = getRandomInteger(1, 6);
-                    var num2 = getRandomInteger(1, 6);
-                    rollList.push(num1 + num2);
-                    if (num1 == num2) {
-                        doubles++;
-                    }
-                }
-                else {
-                    var num1 = getRandomInteger(1, 6);
-                    var num2 = getRandomInteger(1, 6);
-                    var num3 = getRandomInteger(1, 6);
-                    rollList.push(num1 + num2 + num3);  
-                    if (num1 == num2 || num2 == num3 || num1 == num3) {
-                        doubles++;
-                    }
-                    if (num1 == num2 && num2 == num3) {
-                        triples++;
-                    }
-                }
-            }
-            display();
-        }
-
-        function getEachNum() {
-            for (let i = (1 * numDice); i <= (6 * numDice); i++) {
-                var newCell = row1.insertCell();
-                newCell.innerHTML = i;
-                var count = 0;
-                for (let j = 0; j < rollList.length; j++) {
-                    if (rollList[j] == i) {
-                        count++;
-                    }
-                }
-                row2.insertCell().innerHTML = count;
-            }
-        }
-
-        function getMean() {
-            var sum = 0;
-            for (let i = 0; i < rollList.length; i++) {
-                sum += rollList[i];
-            }
-            mean = sum / rollList.length;
-            mean = Math.round(mean * 100) / 100;
-        }
-
-        function getMedian() {
-            rollList = rollList.sort(function(a, b){return a - b});
-            var midIndex = rollList.length / 2;
-            median = rollList[midIndex - 1];
-            if (rollList.length % 2 == 0) {
-                var midIndex2 = (rollList.length / 2) + 1;
-                median = parseInt((rollList[midIndex - 1] + rollList[midIndex2 - 1]) / 2);
-            }
-        }
-
-        function getMode() {
-            var highest = 0;
-            var mostCommon = 0;
-            for (let i = 0; i < rollList.length; i++) {
-                var temp = 1;
-                for (let j = i + 1; j < rollList.length; j++) {
-                    if (rollList[i] == rollList[j]) {
-                        temp++;
-                    }
-                }
-                if (temp > highest) {
-                    highest = temp;
-                    mostCommon = rollList[i];
-                }
-                if (temp == highest && rollList[i] != mostCommon) {
-                    mostCommon += ", " + rollList[i];
-                }
-            }
-            mode = mostCommon;
-        }
-
-        function submit() {
-            numDice = (document.getElementById("numDice")).value;
-            if (numDice == 1 || numDice == 2 || numDice == 3) {
-                reset();
-                rollDice();
-            }
+            doubles = document.getElementById("doubles");
+            triples = document.getElementById("triples");
         }
 
         function getRandomInteger(lower, upper) {
@@ -123,64 +31,145 @@
             return random;
         }
 
-        function reset() {
-            var row1Columns = row1.getElementsByTagName("td").length;
-            for (let i = row1Columns; i > 0; i--) {
-                row1.deleteCell(i);
-                row2.deleteCell(i);
+        function getMean() {
+            var sum = 0;
+            for (let i = 0; i < results.length; i++) {
+                sum += results[i];
             }
-            for (let i = 0; i < rollList.length; i++) {
-                rollList.pop();
-                i--;
-            }
-            doubles = 0;
-            triples = 0;
+            mean = Math.round((sum / results.length) * 100) / 100;
         }
 
-        function display() {
-            getEachNum();
-            doublesOutput.innerHTML = doubles;
-            triplesOutput.innerHTML = triples;
-            getMean();
-            meanOutput.innerHTML = mean;
-            getMedian();
-            medianOutput.innerHTML = median;
-            getMode();
-            modeOutput.innerHTML = mode;
+        function getMedian() { 
+            results = results.sort((a, b) => a - b);
+            var mid = results.length / 2;
+            median = results[mid - 1];
+            if (results.length % 2 == 1) {
+                mid = (results.length - 1) / 2;
+                median = parseInt((results[mid - 1] + results[mid + 1]) / 2 + 1);
+            }
+            if (results.length % 2 == 0) {
+                median = parseInt((results[mid - 1] + results[mid - 1]) / 2);
+            }
+        }
+
+        function getMode() {
+            var highest = 0;
+            var most = 0;
+            for (let i = 0; i < results.length; i++) {
+                var temp = 1;
+                for (let j = i + 1; j < results.length; j++) {
+                    if (results[i] == results[j]) {
+                        temp++;
+                    }
+                }
+                if (temp > highest) {
+                    highest = temp;
+                    most = results[i];
+                }
+                if (temp == highest && results[i] != most) {
+                    most += ", " + results[i];
+                }
+            }
+            mode = most;
+        }
+
+        function rollDice() {
+            numDice = (document.getElementById("numDice")).value;
+            if (numDice == 1 || numDice == 2 || numDice == 3) {
+                for (let i = row1.getElementsByTagName("td").length; i > 0; i--) {
+                    row1.deleteCell(i);
+                    row2.deleteCell(i);
+                }
+                for (let i = 0; i < results.length; i++) {
+                    results.pop();
+                    i--;
+                }
+                numDoubles = 0;
+                numTriples = 0;
+                var numRolls = (document.getElementById("eachRoll")).value;
+                for (let i = 0; i < numRolls; i++) {
+                    if (numDice == 3) {
+                        var die1 = getRandomInteger(1, 6);
+                        var dice2 = getRandomInteger(1, 6);
+                        var dice3 = getRandomInteger(1, 6);
+                        results.push(die1 + dice2 + dice3);  
+                        if (die1 == dice2 || dice2 == dice3 || die1 == dice3) {
+                            numDoubles++;
+                        }
+                        if (die1 == dice2 && dice2 == dice3) {
+                            numTriples++;
+                        }
+                    }
+                    if (numDice == 2) {
+                        var die1 = getRandomInteger(1, 6);
+                        var dice2 = getRandomInteger(1, 6);
+                        results.push(die1 + dice2);
+                        if (die1 == dice2) {
+                            numDoubles++;
+                        }
+                    }
+                    if (numDice == 1) {
+                        results.push(getRandomInteger(1, 6));
+                    }
+                }
+                for (let i = numDice; i <= (6 * numDice); i++) {
+                    row1.insertCell().innerHTML = i;
+                    var count = 0;
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j] == i) {
+                            count++;
+                        }
+                    }
+                    row2.insertCell().innerHTML = count;
+                }
+                doubles.innerHTML = numDoubles;
+                triples.innerHTML = numTriples;
+                getMean();
+                meanOutput.innerHTML = mean;
+                getMedian();
+                medianOutput.innerHTML = median;
+                getMode();
+                modeOutput.innerHTML = mode;
+            }
         }
     </script>
     <style>
-        button {
-            display: block;
+        body {
+            padding-left: 25px;
+            background-color: burlywood;
         }
-
         table {
             border: solid black;
         }
         
         th, td {
-            border: solid black;
-            padding: 10px;
+            padding: 15px;
         }
 
-        body {
-            background-color: burlywood;
+        td {
+            border: solid black;
         }
     </style>
 </head>
 <body onload="initialize();">
     <h1>Roll Roll Roll Your Dice!</h1>
     <form>
-        <p><strong>Number of Dice Rolled (1/2/3)</strong></p>
-        <input type="number" id="numDice">
-        <p><strong>Rolls of Each Die</strong></p>
+        <p><strong>Number of Dice Rolled</strong></p>
+        <!-- <input type="number" id="numDice"> -->
+        <select id="numDice">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        <p><strong>Frequency</strong></p>
         <input type="number" id="eachRoll">
     </form>
     <br>
-    <button onclick="submit();">Submit</button>
+    <button onclick="rollDice();">Roll</button>
+    <br>
     <table>
         <tr id="rollSum">
-            <th><strong>Sum of Rolls</strong></th>
+            <th><strong>Roll Totals</strong></th>
         </tr>
         <br>
         <tr id="eachNum">
@@ -190,7 +179,6 @@
     <br>
     <table>
         <tr>
-            
             <th>Mean</th>
             <th>Median</th>
             <th>Mode</th>
