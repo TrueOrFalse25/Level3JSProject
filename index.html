@@ -1,200 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roll Roll Roll Your Dice</title>
-    <script>
-        results = [];
-        var mean;
-        var median;
-        var mode;
-        var numDoubles = 0;
-        var numTriples = 0;
-
-        function initialize() {
-            row1 = document.getElementById("rollSum");
-            row2 = document.getElementById("eachNum");
-           
-            meanOutput = document.getElementById("mean");
-            medianOutput = document.getElementById("median");
-            modeOutput = document.getElementById("mode");
-
-            doubles = document.getElementById("doubles");
-            triples = document.getElementById("triples");
-        }
-
-        function getRandomInteger(lower, upper) {
-            var multiplier = upper - (lower - 1);
-            var random = parseInt(Math.random() * multiplier) + lower;
-            return random;
-        }
-
-        function getMean() {
-            var sum = 0;
-            for (let i = 0; i < results.length; i++) {
-                sum += results[i];
-            }
-            mean = Math.round((sum / results.length) * 100) / 100;
-        }
-
-        function getMedian() { 
-            results = results.sort((a, b) => a - b);
-            var mid = results.length / 2;
-            median = results[mid - 1];
-            if (results.length % 2 == 1) {
-                mid = (results.length - 1) / 2;
-                median = parseInt((results[mid - 1] + results[mid + 1]) / 2 + 1);
-            }
-            if (results.length % 2 == 0) {
-                median = parseInt((results[mid - 1] + results[mid - 1]) / 2);
-            }
-        }
-
-        function getMode() {
-            var highest = 0;
-            var most = 0;
-            for (let i = 0; i < results.length; i++) {
-                var temp = 1;
-                for (let j = i + 1; j < results.length; j++) {
-                    if (results[i] == results[j]) {
-                        temp++;
-                    }
-                }
-                if (temp > highest) {
-                    highest = temp;
-                    most = results[i];
-                }
-                if (temp == highest && results[i] != most) {
-                    most += ", " + results[i];
-                }
-            }
-            mode = most;
-        }
-
-        function rollDice() {
-            numDice = (document.getElementById("numDice")).value;
-            if (numDice == 1 || numDice == 2 || numDice == 3) {
-                for (let i = row1.getElementsByTagName("td").length; i > 0; i--) {
-                    row1.deleteCell(i);
-                    row2.deleteCell(i);
-                }
-                for (let i = 0; i < results.length; i++) {
-                    results.pop();
-                    i--;
-                }
-                numDoubles = 0;
-                numTriples = 0;
-                var numRolls = (document.getElementById("eachRoll")).value;
-                for (let i = 0; i < numRolls; i++) {
-                    if (numDice == 3) {
-                        var die1 = getRandomInteger(1, 6);
-                        var dice2 = getRandomInteger(1, 6);
-                        var dice3 = getRandomInteger(1, 6);
-                        results.push(die1 + dice2 + dice3);  
-                        if (die1 == dice2 || dice2 == dice3 || die1 == dice3) {
-                            numDoubles++;
-                        }
-                        if (die1 == dice2 && dice2 == dice3) {
-                            numTriples++;
-                        }
-                    }
-                    if (numDice == 2) {
-                        var die1 = getRandomInteger(1, 6);
-                        var dice2 = getRandomInteger(1, 6);
-                        results.push(die1 + dice2);
-                        if (die1 == dice2) {
-                            numDoubles++;
-                        }
-                    }
-                    if (numDice == 1) {
-                        results.push(getRandomInteger(1, 6));
-                    }
-                }
-                for (let i = numDice; i <= (6 * numDice); i++) {
-                    row1.insertCell().innerHTML = i;
-                    var count = 0;
-                    for (let j = 0; j < results.length; j++) {
-                        if (results[j] == i) {
-                            count++;
-                        }
-                    }
-                    row2.insertCell().innerHTML = count;
-                }
-                doubles.innerHTML = numDoubles;
-                triples.innerHTML = numTriples;
-                getMean();
-                meanOutput.innerHTML = mean;
-                getMedian();
-                medianOutput.innerHTML = median;
-                getMode();
-                modeOutput.innerHTML = mode;
-            }
-        }
-    </script>
-    <style>
-        body {
-            padding-left: 25px;
-            background-color: burlywood;
-        }
-        table {
-            border: solid black;
-        }
-        
-        th, td {
-            padding: 15px;
-        }
-
-        td {
-            border: solid black;
-        }
-    </style>
-</head>
-<body onload="initialize();">
-    <h1>Roll Roll Roll Your Dice!</h1>
-    <h2>
-        Roll up to 3 dice and the frequency of which you want to roll that number of dice, and get some randomized results!
-    </h2>
+<html>
+  <head>
+    <title>Dice Roller</title>
+  </head>
+  <body>
     <form>
-        <p><strong>Number of Dice Rolled</strong></p>
-        <!-- <input type="number" id="numDice"> -->
+        Number of Dice: 
         <select id="numDice">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
         </select>
-        <p><strong>Frequency</strong></p>
-        <input type="number" id="eachRoll">
+        Number of Rolls: 
+        <input type="number" id="numRolls" min="1">
+        <button onclick="rollDice()">Roll Dice</button>
     </form>
     <br>
-    <button onclick="rollDice();">Roll</button>
-    <br>
-    <table>
-        <tr id="rollSum">
-            <th><strong>Roll Totals</strong></th>
-        </tr>
-        <br>
-        <tr id="eachNum">
-            <th><strong>Number of Each Roll</strong></th>
-        </tr>
+    <table id="resultsTable">
+      <tr>
+        <th>Result</th>
+        <th>Frequency</th>
+      </tr>
     </table>
     <br>
-    <table>
-        <tr>
-            <th>Mean</th>
-            <th>Median</th>
-            <th>Mode</th>
-            <th>Doubles</th>
-            <th>Triples</th>
-        </tr>
-        <tr>
-            <td id="mean"></td>
-            <td id="median"></td>
-            <td id="mode"></td>
-            <td id="doubles"></td>
-            <td id="triples"></td>
-        </tr>
-    </table>
-</body>
+    <p id="stats"></p>
+    <script>
+        function rollDice() {
+            // Get number of dice and number of rolls from form
+            var numDice = document.getElementById("numDice").value;
+            var numRolls = document.getElementById("numRolls").value;
+            
+            // Clear previous stats
+            document.getElementById("stats").innerHTML = "";
+            
+            // Roll dice and store results in an array
+            var results = [];
+            for (var i = 0; i < numRolls; i++) {
+                var roll = 0;
+                for (var j = 0; j < numDice; j++) {
+                    roll += Math.floor(Math.random() * 6) + 1;
+                }
+                results.push(roll);
+            }
+            
+            // Determine minimum and maximum possible roll value
+            var minRoll = numDice;
+            var maxRoll = numDice * 6;
+            
+            // Count frequency of each roll value
+            var rollCount = {};
+            for (var i = minRoll; i <= maxRoll; i++) {
+                rollCount[i] = 0;
+            }
+            for (var i = 0; i < numRolls; i++) {
+                rollCount[results[i]]++;
+            }
+            
+            // Display frequency of each roll value in table
+            for (var i = minRoll; i <= maxRoll; i++) {
+                var row = document.createElement("tr");
+                var resultCell = document.createElement("td");
+                resultCell.innerHTML = i;
+                row.appendChild(resultCell);
+                var countCell = document.createElement("td");
+                countCell.innerHTML = rollCount[i];
+                row.appendChild(countCell);
+                document.getElementById("resultsTable").appendChild(row);
+            }
+            
+            // Determine doubles and triples
+            var doubles = 0, triples = 0;
+            for (var i = minRoll; i <= maxRoll; i++) {
+            if (rollCount[i] == 2) doubles++;
+            if (rollCount[i] == 3) triples++;
+            }
+            
+            //Calculate Mean, Median and Mode
+            var sum = 0;
+            results.forEach(function(result) {
+            sum += result;
+            });
+            var mean = sum / numRolls;
+            var median;
+            results.sort(function(a, b){return a-b});
+            if (numRolls % 2 == 0) {
+            median = (results[numRolls/2 - 1] + results[numRolls/2])/2;
+            } else {
+            median = results[Math.floor(numRolls/2)];
+            }
+            
+            var mode = findMode(results);
+
+            // Display doubles, triples, mean, median, and mode
+            var stats = "Doubles: " + doubles + "<br>Triples: " + triples + "<br>Mean: " + mean + "<br>Median: " + median + "<br>Mode: " + mode;
+            document.getElementById("stats").innerHTML = stats;
+        }
+        
+        function findMode(arr) {
+            var modeObj = {};
+            
+            // Creating modeObj
+            arr.forEach(function(num) {
+                if (!modeObj[num]) modeObj[num] = 0;
+                modeObj[num]++;
+            });
+            
+            // Creating array of mode/s
+            var maxFrequency = 0, modes = [];
+            for (var num in modeObj) {
+                if (modeObj[num] > maxFrequency) {
+                    modes = [num];
+                    maxFrequency = modeObj[num];
+                }
+                else if (modeObj[num] === maxFrequency) modes.push(num);
+            }
+        
+            // if every element is unique, return empty array
+            if (modes.length === Object.keys(modeObj).length) return [];
+            return modes;
+        }
+    </script>
+  </body>
 </html>
