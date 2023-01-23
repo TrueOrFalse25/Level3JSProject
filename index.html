@@ -1,29 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Dice Roller</title>
-  </head>
-  <body>
-    <form>
-        Number of Dice: 
-        <select id="numDice">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-        </select>
-        Number of Rolls: 
-        <input type="number" id="numRolls" min="1">
-        <button onclick="rollDice()">Roll Dice</button>
-    </form>
-    <br>
-    <table id="resultsTable">
-      <tr>
-        <th>Result</th>
-        <th>Frequency</th>
-      </tr>
-    </table>
-    <br>
-    <p id="stats"></p>
     <script>
         function rollDice() {
             // Get number of dice and number of rolls from form
@@ -120,5 +98,32 @@
             return modes;
         }
     </script>
-  </body>
+    <style>
+        body {
+            margin: 20%;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        Number of Dice: 
+        <select id="numDice">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        Number of Rolls: 
+        <input type="number" id="numRolls" min="1">
+        <button onclick="rollDice()">Roll Dice</button>
+    </form>
+    <br>
+    <table id="resultsTable">
+    <tr>
+        <th>Result</th>
+        <th>Frequency</th>
+    </tr>
+    </table>
+    <br>
+    <p id="stats"></p>
+</body>
 </html>
