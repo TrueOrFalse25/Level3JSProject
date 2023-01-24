@@ -7,10 +7,23 @@
             // Get number of dice and number of rolls from form
             var numDice = document.getElementById("numDice").value;
             var numRolls = document.getElementById("numRolls").value;
-            
+           
+            // reset table
+            var table = document.getElementById("resultsTable");
+            console.log(table);
+            for (let i = table.rows.length - 1; i > 0; i--) {
+                table.deleteRow(i);
+            }
+
+            // if either field is empty don't roll
+            if (!numDice || !numRolls)
+            {
+                return;
+            }
+        
             // Clear previous stats
             document.getElementById("stats").innerHTML = "";
-            
+         
             // Roll dice and store results in an array
             var results = [];
             for (var i = 0; i < numRolls; i++) {
@@ -49,22 +62,27 @@
             // Determine doubles and triples
             var doubles = 0, triples = 0;
             for (var i = minRoll; i <= maxRoll; i++) {
-            if (rollCount[i] == 2) doubles++;
-            if (rollCount[i] == 3) triples++;
+                if (rollCount[i] == 2) {
+                    doubles++;
+                }
+                if (rollCount[i] == 3) {
+                    triples++;
+                }
             }
             
             //Calculate Mean, Median and Mode
             var sum = 0;
             results.forEach(function(result) {
-            sum += result;
+                sum += result;
             });
             var mean = sum / numRolls;
             var median;
             results.sort(function(a, b){return a-b});
             if (numRolls % 2 == 0) {
-            median = (results[numRolls/2 - 1] + results[numRolls/2])/2;
-            } else {
-            median = results[Math.floor(numRolls/2)];
+                median = (results[numRolls/2 - 1] + results[numRolls/2])/2;
+            } 
+            else {
+                median = results[Math.floor(numRolls/2)];
             }
             
             var mode = findMode(results);
@@ -94,36 +112,61 @@
             }
         
             // if every element is unique, return empty array
-            if (modes.length === Object.keys(modeObj).length) return [];
+            if (modes.length === Object.keys(modeObj).length) {
+                return [];
+            }
             return modes;
         }
     </script>
     <style>
-        body {
-            margin: 20%;
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }   
+        .wrapper
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: auto;
+        }
+        form
+        {
+            margin: 10px;
+        }
+        table, tr, th, td
+        {
+            border: 1px solid black;
         }
     </style>
 </head>
 <body>
-    <form>
-        Number of Dice: 
-        <select id="numDice">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-        </select>
-        Number of Rolls: 
-        <input type="number" id="numRolls" min="1">
-        <button onclick="rollDice()">Roll Dice</button>
-    </form>
-    <br>
-    <table id="resultsTable">
-    <tr>
-        <th>Result</th>
-        <th>Frequency</th>
-    </tr>
-    </table>
-    <br>
-    <p id="stats"></p>
+    <div class="wrapper">
+        <form onsubmit="return false">
+            Number of Dice: 
+            <select id="numDice" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+            Number of Rolls: 
+            <input type="number" id="numRolls" min="1" required>
+            <input type="submit" onclick="rollDice()" value="Roll Dice">
+        </form>
+        
+        <table id="resultsTable">
+        <tr>
+            <th>Result</th>
+            <th>Frequency</th>
+        </tr>
+        </table>
+            <br>
+            <p id="stats"></p>
+    </div>
+   
 </body>
 </html>
